@@ -2,10 +2,24 @@
 @import url('@fontsource/noto-sans-kr/500.css');
 @import url('@fontsource/noto-sans-kr/700.css');
 
+@theme {
+  --color-primary: #4880EE;
+  --color-red: #E84118;
+  --color-gray: #DADADA;
+  --color-light-gray: #F2F4F6;
+  --color-white: #FFFFFF;
+  --color-black: #222222;
+  --color-primary-text: #353C49;
+  --color-secondary-text: #6D7582;
+  --color-subtle-text: #8D94A0;
+  --color-title-text: #1A1E27;
+}
+
 body {
   font-family: 'Noto Sans KR', system-ui, -apple-system, sans-serif;
   font-weight: 400;
   font-display: swap;
+  @apply text-primary-text;
 }
 
 .small {
