@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import React, { type PropsWithChildren } from "react";
+import { NavLink, Outlet } from "react-router";
 
 const GNB: React.FC = () => {
     return (
@@ -26,20 +28,28 @@ const MenuItem: React.FC<PropsWithChildren<{ href: string }>> = ({
 }) => {
     return (
         <li>
-            <a href={href} className="flex items-center h-full body-1">
+            <NavLink
+                to={href}
+                className={({ isActive }) =>
+                    classNames("flex items-center h-full body-1", {
+                        "underline underline-offset-8 decoration-primary":
+                            isActive,
+                    })
+                }
+            >
                 {children}
-            </a>
+            </NavLink>
         </li>
     );
 };
 
-export const RootLayout: React.FC<PropsWithChildren> = ({ children }) => {
+export const RootLayout: React.FC = () => {
     return (
         <div>
             <div className="sticky top-0 z-10">
                 <GNB />
             </div>
-            {children}
+            <Outlet />
         </div>
     );
 };
