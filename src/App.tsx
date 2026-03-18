@@ -1,6 +1,7 @@
 import { RootLayout } from "./layout/RootLayout";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
+import { SearchPage } from "./page/SearchPage";
 
 const router = createBrowserRouter([
     {
@@ -8,7 +9,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                Component: () => <div>root placeholder</div>,
+                Component: SearchPage,
             },
             {
                 path: "/favorites",
