@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import {
     getRuntimeLocalStorage,
     useLocalStorageValue,
@@ -20,8 +21,11 @@ type Book = {
     datetime: string;
 };
 
-export const useFavorite = () => {
+export const useFavorite = ({ size = Infinity }: { size?: number } = {}) => {
+    const [page, setPage] = useState(1);
     const favorites = useLocalStorageValue<Book[]>(FAVORITE_KEY, []);
+
+    const totalCount = favorites?.length ?? 0;
 
     const addFavorite = (book: Book) => {
         getRuntimeLocalStorage().set(
@@ -37,5 +41,16 @@ export const useFavorite = () => {
         );
     };
 
-    return { favorites, addFavorite, removeFavorite };
+    const fetchNextPage = () => {
+        if (page * size >= totalCount) return;
+        setPage(page + 1);
+    };
+
+    return {
+        favorites: favorites?.slice(0, page * size) ?? [],
+        totalCount,
+        addFavorite,
+        removeFavorite,
+        fetchNextPage,
+    };
 };

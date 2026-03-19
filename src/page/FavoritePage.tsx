@@ -3,6 +3,7 @@ import bookIcon from "../asset/icon_book.png";
 import { PageLayout } from "../layout/PageLayout";
 import { useFavorite } from "../hook/useFavorite";
 import { BookItem } from "../component/BookItem";
+import { ListEdgeObserver } from "../component/ListEdgeObserver";
 
 const FavoriteSummary: React.FC<{ totalCount: number }> = ({ totalCount }) => {
     return (
@@ -26,13 +27,17 @@ const EmptyList: React.FC = () => {
 };
 
 export const FavoritePage: React.FC = () => {
-    const { favorites = [] } = useFavorite();
+    const {
+        favorites = [],
+        fetchNextPage,
+        totalCount,
+    } = useFavorite({ size: 10 });
     const isEmpty = favorites.length === 0;
     return (
         <PageLayout>
             <h2 className="title-2 text-title-text h-9">내가 찜한 책</h2>
             <div className="h-6"></div>
-            <FavoriteSummary totalCount={favorites.length} />
+            <FavoriteSummary totalCount={totalCount} />
             <div>
                 {isEmpty ? (
                     <div className="grid place-items-center py-30">
@@ -43,6 +48,11 @@ export const FavoritePage: React.FC = () => {
                         {favorites.map((x) => (
                             <BookItem key={x.isbn} book={x} />
                         ))}
+                        <ListEdgeObserver
+                            onIntersect={() => {
+                                fetchNextPage();
+                            }}
+                        />
                     </div>
                 )}
             </div>
