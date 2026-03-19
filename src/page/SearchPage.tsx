@@ -61,7 +61,8 @@ const SearchInput: React.FC<{
 }> = ({ onSubmit: handleSubmit, controller }) => {
     const [query, setQuery] = useState("");
     const input = useRef<HTMLInputElement>(null);
-    const { history, removeHistory, addHistory } = useSearchHistory();
+    const { history = [], removeHistory, addHistory } = useSearchHistory();
+
     const [isFocused, setIsFocused] = useState(false);
     const { refs, floatingStyles, context } = useFloating({
         open: isFocused,
