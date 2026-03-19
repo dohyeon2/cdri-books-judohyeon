@@ -10,8 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.19",
+    "@fontsource/noto-sans-kr": "^5.2.9",
+    "@tailwindcss/vite": "^4.2.1",
+    "@tanstack/react-query": "^5.91.2",
+    "axios": "^1.13.6",
+    "classnames": "^2.5.1",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "react-router": "^7.13.1",
+    "tailwindcss": "^4.2.1",
+    "use-json-localstorage": "^1.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
