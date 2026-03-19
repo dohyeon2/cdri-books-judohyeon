@@ -428,6 +428,7 @@ export const SearchPage: React.FC = () => {
                             {books?.documents.map((x) => (
                                 <BookItem
                                     key={x.isbn}
+                                    isbn={x.isbn}
                                     thumbnail={x.thumbnail}
                                     title={x.title}
                                     authors={x.authors}

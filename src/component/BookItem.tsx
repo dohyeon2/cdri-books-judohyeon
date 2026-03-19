@@ -1,6 +1,8 @@
 import classNames from "classnames";
 import { useState, type PropsWithChildren } from "react";
 import { ChevronDownIcon } from "../icon/ChevronDownIcon";
+import { HeartIcon } from "../icon/HeartIcon";
+import { useFavorite } from "../hook/useFavorite";
 
 export const BookItem: React.FC<{
     thumbnail: string;
@@ -10,9 +12,20 @@ export const BookItem: React.FC<{
     description: string;
     salePrice: number;
     url: string;
-}> = ({ thumbnail, title, authors, price, description, salePrice, url }) => {
+    isbn: string;
+}> = ({
+    thumbnail,
+    title,
+    authors,
+    price,
+    description,
+    salePrice,
+    url,
+    isbn,
+}) => {
     const [isOpen, setIsOpen] = useState(false);
-
+    const { favorites = [], addFavorite, removeFavorite } = useFavorite();
+    const isFavorite = favorites.includes(isbn);
     return (
         <div
             className={classNames(" border-b border-[#D2D6DA] flex gap-x-12", {
@@ -26,6 +39,20 @@ export const BookItem: React.FC<{
                     "w-[210px] h-[280px]": isOpen,
                 })}
             >
+                <FavoriteButton
+                    className={classNames("absolute", {
+                        "w-6 h-6 top-2 right-2": isOpen,
+                        "w-3 h-3 top-0.25 right-0.25": !isOpen,
+                    })}
+                    isFavorite={isFavorite}
+                    onClick={() => {
+                        if (isFavorite) {
+                            removeFavorite(isbn);
+                        } else {
+                            addFavorite(isbn);
+                        }
+                    }}
+                />
                 {thumbnail && (
                     <img
                         src={thumbnail}
@@ -183,5 +210,17 @@ const BookButton: React.FC<
         >
             {children}
         </Component>
+    );
+};
+
+const FavoriteButton: React.FC<{
+    isFavorite: boolean;
+    className?: string;
+    onClick: () => void;
+}> = ({ isFavorite, className = "w-6 h-6", onClick }) => {
+    return (
+        <button onClick={onClick} className={className}>
+            <HeartIcon isActive={isFavorite} className="w-full h-full" />
+        </button>
     );
 };
