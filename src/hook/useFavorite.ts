@@ -3,7 +3,7 @@ import {
     useLocalStorageValue,
 } from "use-json-localstorage";
 
-const FAVORITE_KEY = "favorites";
+const FAVORITE_KEY = "cdri-books-judohyeon-favorites";
 
 type Book = {
     title: string;

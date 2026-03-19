@@ -3,7 +3,7 @@ import {
     getRuntimeLocalStorage,
 } from "use-json-localstorage";
 
-const SEARCH_HISTORY_KEY = "searchHistory";
+const SEARCH_HISTORY_KEY = "cdri-books-judohyeon-search-history";
 
 export const useSearchHistory = () => {
     const history = useLocalStorageValue<string[]>(SEARCH_HISTORY_KEY, []);
