@@ -9,20 +9,16 @@ import {
     useInteractions,
 } from "@floating-ui/react";
 import classNames from "classnames";
-import React, {
-    forwardRef,
-    useImperativeHandle,
-    useRef,
-    useState,
-} from "react";
+import React, { useImperativeHandle, useRef, useState } from "react";
 import bookIcon from "../asset/icon_book.png";
 import { BookItem } from "../component/BookItem";
 import { useSearchBook } from "../hook/useSearchBook";
 import { useSearchHistory } from "../hook/useSearchHistory";
+import { ChevronDownIcon } from "../icon/ChevronDownIcon";
 import { SearchIcon } from "../icon/SearchIcon";
 import { XIcon } from "../icon/XIcon";
 import { XIcon2 } from "../icon/XIcon2";
-import { ChevronDownIcon } from "../icon/ChevronDownIcon";
+import { PageLayout } from "../layout/PageLayout";
 
 const SearchSummary: React.FC<{ totalCount: number }> = ({ totalCount }) => {
     return (
@@ -152,24 +148,6 @@ const SearchInput: React.FC<{
         </form>
     );
 };
-
-const Button = forwardRef<
-    HTMLButtonElement,
-    { children: React.ReactNode; onClick: () => void }
->(({ children, onClick }, ref) => {
-    return (
-        <button
-            ref={ref}
-            type="button"
-            className="border-subtle-text border rounded-lg p-2.5 body-2 text-subtle-text leading-none"
-            onClick={onClick}
-        >
-            {children}
-        </button>
-    );
-});
-
-Button.displayName = "Button";
 
 const EmptyList: React.FC = () => {
     return (
@@ -387,61 +365,49 @@ export const SearchPage: React.FC = () => {
     const isEmpty = !isLoading && books?.documents.length === 0;
 
     return (
-        <div className="py-26">
-            <div className="max-w-240 mx-auto px-4">
-                <div className="grid gap-4">
-                    <h2 className="title-2 text-title-text h-9">도서 검색</h2>
-                    <div className="grid grid-cols-[1fr_auto] gap-4 items-center max-w-142">
-                        <SearchInput
-                            controller={
-                                controller as React.RefObject<{
-                                    input: HTMLInputElement | null;
-                                }>
+        <PageLayout>
+            <div className="grid gap-4">
+                <h2 className="title-2 text-title-text h-9">도서 검색</h2>
+                <div className="grid grid-cols-[1fr_auto] gap-4 items-center max-w-142">
+                    <SearchInput
+                        controller={
+                            controller as React.RefObject<{
+                                input: HTMLInputElement | null;
+                            }>
+                        }
+                        onSubmit={(query) => {
+                            setSearchQuery(query);
+                            setTarget(undefined);
+                        }}
+                    />
+                    <DetailSearchButton
+                        onSubmit={({ target, query }) => {
+                            setTarget(
+                                target as "title" | "person" | "publisher",
+                            );
+                            setSearchQuery(query);
+                            if (controller.current?.input) {
+                                controller.current.input.value = "";
                             }
-                            onSubmit={(query) => {
-                                setSearchQuery(query);
-                                setTarget(undefined);
-                            }}
-                        />
-                        <DetailSearchButton
-                            onSubmit={({ target, query }) => {
-                                setTarget(
-                                    target as "title" | "person" | "publisher",
-                                );
-                                setSearchQuery(query);
-                                if (controller.current?.input) {
-                                    controller.current.input.value = "";
-                                }
-                            }}
-                        />
-                    </div>
-                </div>
-                <div className="h-6"></div>
-                <SearchSummary totalCount={books?.meta.total_count ?? 0} />
-                <div>
-                    {isEmpty ? (
-                        <div className="grid place-items-center py-30">
-                            <EmptyList />
-                        </div>
-                    ) : (
-                        <div className="py-9">
-                            {books?.documents.map((x) => (
-                                <BookItem
-                                    key={x.isbn}
-                                    isbn={x.isbn}
-                                    thumbnail={x.thumbnail}
-                                    title={x.title}
-                                    authors={x.authors}
-                                    price={x.price}
-                                    description={x.contents}
-                                    salePrice={x.sale_price}
-                                    url={x.url}
-                                />
-                            ))}
-                        </div>
-                    )}
+                        }}
+                    />
                 </div>
             </div>
-        </div>
+            <div className="h-6"></div>
+            <SearchSummary totalCount={books?.meta.total_count ?? 0} />
+            <div>
+                {isEmpty ? (
+                    <div className="grid place-items-center py-30">
+                        <EmptyList />
+                    </div>
+                ) : (
+                    <div className="py-9">
+                        {books?.documents.map((x) => (
+                            <BookItem key={x.isbn} book={x} />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </PageLayout>
     );
 };

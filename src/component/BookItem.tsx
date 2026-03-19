@@ -5,27 +5,34 @@ import { HeartIcon } from "../icon/HeartIcon";
 import { useFavorite } from "../hook/useFavorite";
 
 export const BookItem: React.FC<{
-    thumbnail: string;
-    title: string;
-    authors: string[];
-    price: number;
-    description: string;
-    salePrice: number;
-    url: string;
-    isbn: string;
-}> = ({
-    thumbnail,
-    title,
-    authors,
-    price,
-    description,
-    salePrice,
-    url,
-    isbn,
-}) => {
+    book: {
+        title: string;
+        contents: string;
+        url: string;
+        isbn: string;
+        authors: string[];
+        publisher: string;
+        translators: string[];
+        price: number;
+        sale_price: number;
+        thumbnail: string;
+        status: string;
+        datetime: string;
+    };
+}> = ({ book }) => {
+    const {
+        thumbnail,
+        title,
+        authors,
+        price,
+        contents: description,
+        sale_price: salePrice,
+        url,
+        isbn,
+    } = book;
     const [isOpen, setIsOpen] = useState(false);
     const { favorites = [], addFavorite, removeFavorite } = useFavorite();
-    const isFavorite = favorites.includes(isbn);
+    const isFavorite = favorites.find((b) => b.isbn === isbn) !== undefined;
     return (
         <div
             className={classNames(" border-b border-[#D2D6DA] flex gap-x-12", {
@@ -49,7 +56,7 @@ export const BookItem: React.FC<{
                         if (isFavorite) {
                             removeFavorite(isbn);
                         } else {
-                            addFavorite(isbn);
+                            addFavorite(book);
                         }
                     }}
                 />
