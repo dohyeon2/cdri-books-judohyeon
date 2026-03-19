@@ -1,8 +1,20 @@
-import React, { useState } from "react";
+/* eslint-disable react-hooks/refs */
+import {
+    autoUpdate,
+    flip,
+    size,
+    useDismiss,
+    useFloating,
+    useInteractions,
+} from "@floating-ui/react";
+import classNames from "classnames";
+import React, { useRef, useState } from "react";
 import bookIcon from "../asset/icon_book.png";
 import { BookItem } from "../component/BookItem";
 import { useSearchBook } from "../hook/useSearchBook";
+import { useSearchHistory } from "../hook/useSearchHistory";
 import { SearchIcon } from "../icon/SearchIcon";
+import { XIcon } from "../icon/XIcon";
 
 const SearchSummary: React.FC<{ totalCount: number }> = ({ totalCount }) => {
     return (
@@ -16,19 +28,112 @@ const SearchSummary: React.FC<{ totalCount: number }> = ({ totalCount }) => {
     );
 };
 
-const SearchInput: React.FC = () => {
+const SearchHistoryItem: React.FC<{
+    children: string;
+    onDelete: () => void;
+    onSubmit: (query: string) => void;
+}> = ({ children, onDelete, onSubmit }) => {
     return (
-        <div className="rounded-full bg-light-gray grid grid-cols-[auto_1fr]">
-            <div className="p-2.5 grid place-items-center">
-                <SearchIcon className="w-7.5 h-7.5" />
-            </div>
-            <input
-                name="search"
-                type="text"
-                className="py-4.5 caption outline-none pr-2.5 text-subtle-text placeholder:text-subtle-text"
-                placeholder="검색어를 입력하세요."
-            />
+        <div className="py-3 body-2 text-subtle-text leading-none pr-6 flex justify-between items-center">
+            <button type="button" onClick={() => onSubmit(children)}>
+                {children}
+            </button>
+            <button type="button" onClick={onDelete}>
+                <XIcon />
+            </button>
         </div>
+    );
+};
+
+const SearchInput: React.FC<{
+    onSubmit: (query: string) => void;
+}> = ({ onSubmit: handleSubmit }) => {
+    const [query, setQuery] = useState("");
+    const input = useRef<HTMLInputElement>(null);
+    const { history, removeHistory, addHistory } = useSearchHistory();
+    const [isFocused, setIsFocused] = useState(false);
+    const { refs, floatingStyles, context } = useFloating({
+        open: isFocused,
+        onOpenChange: setIsFocused,
+        placement: "bottom-start",
+        middleware: [
+            flip(),
+            size({
+                apply: ({ rects, elements }) => {
+                    Object.assign(elements.floating.style, {
+                        width: `${rects.reference.width}px`,
+                        maxWidth: `${rects.reference.width}px`,
+                    });
+                },
+            }),
+        ],
+        whileElementsMounted: autoUpdate,
+    });
+
+    const dismiss = useDismiss(context);
+    const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
+
+    return (
+        <form
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit(query);
+                addHistory(query);
+                setIsFocused(false);
+            }}
+        >
+            <div ref={refs.setReference} {...getReferenceProps()} tabIndex={-1}>
+                <div
+                    className={classNames(
+                        "rounded-[24px] bg-light-gray grid grid-cols-[auto_1fr] overflow-hidden",
+                        {
+                            "rounded-b-none": history.length > 0 && isFocused,
+                        },
+                    )}
+                >
+                    <div className="p-2.5 grid place-items-center">
+                        <SearchIcon className="w-7.5 h-7.5" />
+                    </div>
+                    <input
+                        ref={input}
+                        name="search"
+                        type="text"
+                        onFocusCapture={() => setIsFocused(true)}
+                        className="py-4.5 caption outline-none pr-2.5 text-subtle-text placeholder:text-subtle-text"
+                        placeholder="검색어를 입력하세요."
+                        value={query}
+                        onChange={(e) => {
+                            setQuery(e.target.value);
+                            setIsFocused(true);
+                        }}
+                    />
+                </div>
+                {isFocused && history.length > 0 && (
+                    <div
+                        ref={refs.setFloating}
+                        {...getFloatingProps()}
+                        style={floatingStyles}
+                        className="bg-light-gray rounded-b-[24px] pl-[50px] py-4 z-50"
+                    >
+                        {history.map((x) => (
+                            <SearchHistoryItem
+                                key={x}
+                                onSubmit={(query) => {
+                                    setQuery(query);
+                                    handleSubmit(query);
+                                    setIsFocused(false);
+                                }}
+                                onDelete={() => {
+                                    removeHistory(x);
+                                }}
+                            >
+                                {x}
+                            </SearchHistoryItem>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </form>
     );
 };
 
@@ -60,17 +165,9 @@ const EmptyList: React.FC = () => {
 
 export const SearchPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
-
     const { data: books, isLoading } = useSearchBook({ query: searchQuery });
 
     const isEmpty = !isLoading && books?.documents.length === 0;
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        const formData = new FormData(e.target as HTMLFormElement);
-        const value = formData.get("search") as string;
-        e.preventDefault();
-        setSearchQuery(value);
-    };
 
     return (
         <div className="py-26">
@@ -78,9 +175,8 @@ export const SearchPage: React.FC = () => {
                 <div className="grid gap-4">
                     <h2 className="title-2 text-title-text h-9">도서 검색</h2>
                     <div className="grid grid-cols-[1fr_auto] gap-4 items-center max-w-142">
-                        <form onSubmit={handleSubmit}>
-                            <SearchInput />
-                        </form>
+                        <SearchInput onSubmit={setSearchQuery} />
+
                         <Button onClick={() => {}}>상세검색</Button>
                     </div>
                 </div>

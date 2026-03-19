@@ -26,7 +26,12 @@ export const BookItem: React.FC<{
                     "w-[210px] h-[280px]": isOpen,
                 })}
             >
-                <img src={thumbnail} className="w-full h-full object-cover" />
+                {thumbnail && (
+                    <img
+                        src={thumbnail}
+                        className="w-full h-full object-cover"
+                    />
+                )}
             </div>
             <div className="grid grid-rows-[auto_1fr] flex-1">
                 <div
@@ -46,7 +51,10 @@ export const BookItem: React.FC<{
                         })}
                     >
                         <p className="title-3 text-primary-text">
-                            {price.toLocaleString("ko-KR")}원
+                            {(salePrice > 0 ? salePrice : price).toLocaleString(
+                                "ko-KR",
+                            )}
+                            원
                         </p>
                     </div>
                     <div className="w-14"></div>
@@ -96,9 +104,15 @@ export const BookItem: React.FC<{
                                 <Price
                                     label="원가"
                                     price={price}
-                                    strikeThrough
+                                    strikeThrough={salePrice > 0}
                                 />
-                                <Price label="할인가" price={salePrice} bold />
+                                {salePrice > 0 && (
+                                    <Price
+                                        label="할인가"
+                                        price={salePrice}
+                                        bold
+                                    />
+                                )}
                             </div>
                             <BookButton
                                 variant="primary"
