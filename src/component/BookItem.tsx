@@ -59,15 +59,17 @@ export const BookItem: React.FC<{
                     </div>
                     <div className="w-14"></div>
                     <div className="flex gap-2 items-center">
-                        <BookButton
-                            variant="primary"
-                            className={classNames({
-                                hidden: isOpen,
-                            })}
-                            href={url}
-                        >
-                            구매하기
-                        </BookButton>
+                        {!isOpen && (
+                            <BookButton
+                                variant="primary"
+                                className={classNames({
+                                    hidden: isOpen,
+                                })}
+                                href={url}
+                            >
+                                구매하기
+                            </BookButton>
+                        )}
                         <BookButton onClick={() => setIsOpen(!isOpen)}>
                             <span className="inline-flex gap-1.25 items-center">
                                 <p>상세보기</p>
