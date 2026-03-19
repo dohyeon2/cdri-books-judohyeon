@@ -12,6 +12,7 @@ import classNames from "classnames";
 import React, { useImperativeHandle, useRef, useState } from "react";
 import bookIcon from "../asset/icon_book.png";
 import { BookItem } from "../component/BookItem";
+import { ListEdgeObserver } from "../component/ListEdgeObserver";
 import { useSearchBook } from "../hook/useSearchBook";
 import { useSearchHistory } from "../hook/useSearchHistory";
 import { ChevronDownIcon } from "../icon/ChevronDownIcon";
@@ -355,14 +356,16 @@ export const SearchPage: React.FC = () => {
     const [target, setTarget] = useState<
         "title" | "person" | "publisher" | undefined
     >();
-    const { data: books, isLoading } = useSearchBook({
+    const { data, isLoading, fetchNextPage } = useSearchBook({
         query: searchQuery,
         target,
     });
     const controller = useRef<{
         input: HTMLInputElement | null;
     }>(null);
-    const isEmpty = !isLoading && books?.documents.length === 0;
+    const totalCount = data?.pages?.[0]?.meta.total_count ?? 0;
+    const books = data?.pages?.flatMap((x) => x.documents);
+    const isEmpty = !isLoading && books?.length === 0;
 
     return (
         <PageLayout>
@@ -394,7 +397,7 @@ export const SearchPage: React.FC = () => {
                 </div>
             </div>
             <div className="h-6"></div>
-            <SearchSummary totalCount={books?.meta.total_count ?? 0} />
+            <SearchSummary totalCount={totalCount} />
             <div>
                 {isEmpty ? (
                     <div className="grid place-items-center py-30">
@@ -402,9 +405,14 @@ export const SearchPage: React.FC = () => {
                     </div>
                 ) : (
                     <div className="py-9">
-                        {books?.documents.map((x) => (
+                        {books?.map((x) => (
                             <BookItem key={x.isbn} book={x} />
                         ))}
+                        <ListEdgeObserver
+                            onIntersect={() => {
+                                fetchNextPage();
+                            }}
+                        />
                     </div>
                 )}
             </div>

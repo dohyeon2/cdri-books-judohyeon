@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { api } from "../lib/api/api";
 import { queryKeys } from "../lib/api/query";
 import { BOOK_API_URL } from "../lib/consts";
-import { api } from "../lib/api/api";
 
 export const queryKeySearchBook = queryKeys("searchBook");
 
@@ -12,14 +12,21 @@ export const useSearchBook = ({
     query: string;
     target?: "title" | "person" | "publisher" | "isbn";
 }) => {
-    return useQuery({
+    return useInfiniteQuery({
         queryKey: queryKeySearchBook(query),
-        queryFn: () =>
+        queryFn: ({ pageParam = 1 }) =>
             api
                 .get<SearchBookResponse>(BOOK_API_URL, {
-                    params: { query, target } satisfies SearchBookParams,
+                    params: {
+                        query,
+                        target,
+                        page: pageParam,
+                    } satisfies SearchBookParams,
                 })
                 .then((res) => res.data),
+        getNextPageParam: (lastPage, allPages) =>
+            lastPage.meta.is_end ? undefined : allPages.length + 1,
+        initialPageParam: 1,
     });
 };
 
