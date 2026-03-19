@@ -74,7 +74,7 @@ export const BookItem: React.FC<{
                             <span className="inline-flex gap-1.25 items-center">
                                 <p>상세보기</p>
                                 <ChevronDownIcon
-                                    className={classNames({
+                                    className={classNames("w-[14px] h-[8px]", {
                                         "rotate-180": isOpen,
                                     })}
                                 />

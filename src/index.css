@@ -11,6 +11,7 @@
   --color-black: #222222;
   --color-primary-text: #353C49;
   --color-secondary-text: #6D7582;
+  --color-caption-text: #8D94A0;
   --color-subtle-text: #8D94A0;
   --color-title-text: #1A1E27;
 }
@@ -37,6 +38,13 @@ button {
   font-weight: 500;
   font-size: 16px;
   line-height: 16px;
+  letter-spacing: 0%;
+}
+
+.caption-medium {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
   letter-spacing: 0%;
 }
 

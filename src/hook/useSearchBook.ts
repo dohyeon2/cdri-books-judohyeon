@@ -5,13 +5,19 @@ import { api } from "../lib/api/api";
 
 export const queryKeySearchBook = queryKeys("searchBook");
 
-export const useSearchBook = ({ query }: { query: string }) => {
+export const useSearchBook = ({
+    query,
+    target,
+}: {
+    query: string;
+    target?: "title" | "person" | "publisher" | "isbn";
+}) => {
     return useQuery({
         queryKey: queryKeySearchBook(query),
         queryFn: () =>
             api
                 .get<SearchBookResponse>(BOOK_API_URL, {
-                    params: { query } satisfies SearchBookParams,
+                    params: { query, target } satisfies SearchBookParams,
                 })
                 .then((res) => res.data),
     });
