@@ -1,6 +1,6 @@
-@import "tailwindcss";
 @import url('@fontsource/noto-sans-kr/500.css');
 @import url('@fontsource/noto-sans-kr/700.css');
+@import "tailwindcss";
 
 @theme {
   --color-primary: #4880EE;
