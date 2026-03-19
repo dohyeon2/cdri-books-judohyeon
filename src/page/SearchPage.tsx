@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { SearchIcon } from "../icon/SearchIcon";
+import { useSearchBook } from "../hook/useSearchBook";
+import bookIcon from "../asset/icon_book.png";
 
-const SearchSummary: React.FC = () => {
+const SearchSummary: React.FC<{ totalCount: number }> = ({ totalCount }) => {
     return (
         <div className="flex gap-4">
             <span>도서 검색 결과</span>
             <span>
-                총 <span className="font-bold text-primary">0</span>건
+                총 <span className="font-bold text-primary">{totalCount}</span>
+                건
             </span>
         </div>
     );
@@ -23,7 +26,7 @@ const SearchInput: React.FC<{
             </div>
             <input
                 type="text"
-                className="py-4.5 caption outline-none pr-2.5 text-subtle-text placeholder:text-subtle-text w-120"
+                className="py-4.5 caption outline-none pr-2.5 text-subtle-text placeholder:text-subtle-text"
                 placeholder="검색어를 입력하세요."
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
@@ -47,15 +50,29 @@ const Button: React.FC<{
     );
 };
 
+const EmptyList: React.FC = () => {
+    return (
+        <div className="grid gap-6 place-items-center">
+            <img src={bookIcon} />
+            <p className="caption text-secondary-text">
+                검색된 결과가 없습니다.
+            </p>
+        </div>
+    );
+};
+
 export const SearchPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
+    const { data: books, isLoading } = useSearchBook({ query: searchQuery });
+
+    const isEmpty = !isLoading && books?.documents.length === 0;
 
     return (
         <div className="py-26">
-            <div className="max-w-240 mx-auto">
+            <div className="max-w-240 mx-auto px-4">
                 <div className="grid gap-4">
                     <h2 className="title-2 text-title-text h-9">도서 검색</h2>
-                    <div className="flex gap-4 items-center">
+                    <div className="grid grid-cols-[1fr_auto] gap-4 items-center max-w-142">
                         <SearchInput
                             value={searchQuery}
                             onChange={setSearchQuery}
@@ -64,7 +81,14 @@ export const SearchPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="h-6"></div>
-                <SearchSummary />
+                <SearchSummary totalCount={books?.meta.total_count ?? 0} />
+                <div>
+                    {isEmpty && (
+                        <div className="grid place-items-center py-30">
+                            <EmptyList />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
