@@ -9,7 +9,8 @@ export const BookItem: React.FC<{
     price: number;
     description: string;
     salePrice: number;
-}> = ({ thumbnail, title, authors, price, description, salePrice }) => {
+    url: string;
+}> = ({ thumbnail, title, authors, price, description, salePrice, url }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -55,6 +56,7 @@ export const BookItem: React.FC<{
                             className={classNames({
                                 hidden: isOpen,
                             })}
+                            href={url}
                         >
                             구매하기
                         </BookButton>
@@ -98,7 +100,11 @@ export const BookItem: React.FC<{
                                 />
                                 <Price label="할인가" price={salePrice} bold />
                             </div>
-                            <BookButton variant="primary" className="w-60">
+                            <BookButton
+                                variant="primary"
+                                className="w-60"
+                                href={url}
+                            >
                                 구매하기
                             </BookButton>
                         </div>
@@ -140,12 +146,17 @@ const BookButton: React.FC<
         variant?: "primary" | "base";
         onClick?: () => void;
         className?: string;
+        href?: string;
     }>
-> = ({ children, variant = "base", onClick, className }) => {
+> = ({ children, variant = "base", onClick, className, href }) => {
+    const Component = href ? "a" : "button";
     return (
-        <button
+        <Component
+            type={Component === "button" ? "button" : undefined}
+            href={href}
+            target={href ? "_blank" : undefined}
             className={classNames(
-                "py-4 px-3.25 min-w-28.75 rounded-lg leading-none caption",
+                "inline-block py-4 px-3.25 min-w-28.75 rounded-lg leading-none caption text-center",
                 className,
                 {
                     "bg-primary text-white": variant === "primary",
@@ -155,6 +166,6 @@ const BookButton: React.FC<
             onClick={onClick}
         >
             {children}
-        </button>
+        </Component>
     );
 };

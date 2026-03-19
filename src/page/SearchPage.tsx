@@ -99,6 +99,7 @@ export const SearchPage: React.FC = () => {
                                     price={x.price}
                                     description={x.contents}
                                     salePrice={x.sale_price}
+                                    url={x.url}
                                 />
                             ))}
                         </div>
