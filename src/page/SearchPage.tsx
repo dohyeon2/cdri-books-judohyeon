@@ -16,21 +16,17 @@ const SearchSummary: React.FC<{ totalCount: number }> = ({ totalCount }) => {
     );
 };
 
-const SearchInput: React.FC<{
-    value: string;
-    onChange: (value: string) => void;
-}> = ({ value, onChange }) => {
+const SearchInput: React.FC = () => {
     return (
         <div className="rounded-full bg-light-gray grid grid-cols-[auto_1fr]">
             <div className="p-2.5 grid place-items-center">
                 <SearchIcon className="w-7.5 h-7.5" />
             </div>
             <input
+                name="search"
                 type="text"
                 className="py-4.5 caption outline-none pr-2.5 text-subtle-text placeholder:text-subtle-text"
                 placeholder="검색어를 입력하세요."
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
             />
         </div>
     );
@@ -64,9 +60,17 @@ const EmptyList: React.FC = () => {
 
 export const SearchPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
+
     const { data: books, isLoading } = useSearchBook({ query: searchQuery });
 
     const isEmpty = !isLoading && books?.documents.length === 0;
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        const formData = new FormData(e.target as HTMLFormElement);
+        const value = formData.get("search") as string;
+        e.preventDefault();
+        setSearchQuery(value);
+    };
 
     return (
         <div className="py-26">
@@ -74,10 +78,9 @@ export const SearchPage: React.FC = () => {
                 <div className="grid gap-4">
                     <h2 className="title-2 text-title-text h-9">도서 검색</h2>
                     <div className="grid grid-cols-[1fr_auto] gap-4 items-center max-w-142">
-                        <SearchInput
-                            value={searchQuery}
-                            onChange={setSearchQuery}
-                        />
+                        <form onSubmit={handleSubmit}>
+                            <SearchInput />
+                        </form>
                         <Button onClick={() => {}}>상세검색</Button>
                     </div>
                 </div>
