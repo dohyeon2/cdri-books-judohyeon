@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { SearchIcon } from "../icon/SearchIcon";
-import { useSearchBook } from "../hook/useSearchBook";
 import bookIcon from "../asset/icon_book.png";
+import { BookItem } from "../component/BookItem";
+import { useSearchBook } from "../hook/useSearchBook";
+import { SearchIcon } from "../icon/SearchIcon";
 
 const SearchSummary: React.FC<{ totalCount: number }> = ({ totalCount }) => {
     return (
@@ -83,9 +84,23 @@ export const SearchPage: React.FC = () => {
                 <div className="h-6"></div>
                 <SearchSummary totalCount={books?.meta.total_count ?? 0} />
                 <div>
-                    {isEmpty && (
+                    {isEmpty ? (
                         <div className="grid place-items-center py-30">
                             <EmptyList />
+                        </div>
+                    ) : (
+                        <div className="py-9">
+                            {books?.documents.map((x) => (
+                                <BookItem
+                                    key={x.isbn}
+                                    thumbnail={x.thumbnail}
+                                    title={x.title}
+                                    authors={x.authors}
+                                    price={x.price}
+                                    description={x.contents}
+                                    salePrice={x.sale_price}
+                                />
+                            ))}
                         </div>
                     )}
                 </div>
